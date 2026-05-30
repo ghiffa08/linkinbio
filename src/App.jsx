@@ -14,8 +14,14 @@ const fetchLinks = async () => {
   return data;
 };
 
-const fetchHero = async () => {
-  const { data, error } = await supabase.from('hero_section').select('*').single();
+const fetchPersonalInfo = async () => {
+  const { data, error } = await supabase.from('personal_info').select('*').single();
+  if (error) throw error;
+  return data;
+};
+
+const fetchSettings = async () => {
+  const { data, error } = await supabase.from('general_settings').select('*').single();
   if (error) throw error;
   return data;
 };
@@ -45,11 +51,12 @@ const fetchLatestArticle = async () => {
 
 export default function App() {
   const { data: links, isLoading: isLinksLoading } = useSWR('bio_links', fetchLinks);
-  const { data: hero, isLoading: isHeroLoading } = useSWR('hero_section', fetchHero);
+  const { data: info, isLoading: isInfoLoading } = useSWR('personal_info', fetchPersonalInfo);
+  const { data: settings, isLoading: isSettingsLoading } = useSWR('general_settings', fetchSettings);
   const { data: latestProject, isLoading: isProjectLoading } = useSWR('latest_project', fetchLatestProject);
   const { data: latestArticle, isLoading: isArticleLoading } = useSWR('latest_article', fetchLatestArticle);
 
-  const isLoading = isLinksLoading || isHeroLoading || isProjectLoading || isArticleLoading;
+  const isLoading = isLinksLoading || isInfoLoading || isSettingsLoading || isProjectLoading || isArticleLoading;
 
   // Initialize GSAP Animations when data is ready
   useEffect(() => {
@@ -72,6 +79,16 @@ export default function App() {
   }, [isLoading]);
 
   const directoryLinks = links?.filter(l => !l.featured) || [];
+
+  // Parse Personal Info safely
+  const fullName = info?.full_name || 'HAIKAL JIBRAN';
+  const nameParts = fullName.split(' ');
+  const headline_1 = nameParts.slice(0, 2).join(' ');
+  const headline_2 = nameParts.slice(2).join(' ');
+  
+  const appName = settings?.app_name || 'GHIFFA.DEV';
+  const email = info?.email || 'haikaljibran.dev@gmail.com';
+  const phone = info?.phone_number || '+6285156958580';
 
   return (
     <>
@@ -118,7 +135,7 @@ export default function App() {
           {/* 1. TOP BAR */}
           <header className="flex justify-between items-center p-4 hairline-b anim-fade-down opacity-0 font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase">
             <div>[ VOL. 01 ]</div>
-            <div className="text-center">GHIIFA.DEV</div>
+            <div className="text-center">{appName}</div>
             <div className="text-right">KUNINGAN</div>
           </header>
 
@@ -137,17 +154,21 @@ export default function App() {
               {/* 2. HERO / PROFILE */}
               <section className="pt-12 pb-8 px-6 text-center anim-fade-down opacity-0">
                 <h1 className="text-4xl sm:text-5xl font-black tracking-tighter uppercase leading-[0.85] mb-4">
-                  {hero?.headline_1 || 'HAIKAL JIBRAN'}
-                  <br />
-                  <span className="text-gray-400">{hero?.headline_2 || 'AL-GHIFFARRY'}</span>
+                  {headline_1}
+                  {headline_2 && (
+                    <>
+                      <br />
+                      <span className="text-gray-400">{headline_2}</span>
+                    </>
+                  )}
                 </h1>
                 
                 <div className="font-mono text-xs text-[#3B82F6] uppercase tracking-widest mb-4">
-                  {hero?.subtitle || 'Building the bridge between bits and atoms.'}
+                  {info?.headline || 'Building the bridge between bits and atoms.'}
                 </div>
                 
                 <p className="text-sm font-medium text-gray-600 px-4">
-                  {hero?.role || 'IoT Engineer | Fullstack Developer'}
+                  {info?.role || 'IoT Engineer | Fullstack Developer'}
                 </p>
               </section>
 
@@ -241,12 +262,16 @@ export default function App() {
               {/* 6. FOOTER */}
               <footer className="mt-auto p-6 hairline-t flex flex-col items-center justify-center bg-[#FAFAFA] anim-slide-up opacity-0">
                 <div className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-2 text-center">
-                  © 2026 {hero?.headline_1} {hero?.headline_2}
+                  © {new Date().getFullYear()} {fullName}
                 </div>
                 <div className="flex space-x-4 font-mono text-[10px] text-[#111111] font-bold">
-                  <a href="mailto:haikaljibran.dev@gmail.com" className="hover:text-[#3B82F6] border-b border-transparent hover:border-[#3B82F6] transition-colors">EMAIL</a>
-                  <span>/</span>
-                  <a href="tel:+6285156958580" className="hover:text-[#3B82F6] border-b border-transparent hover:border-[#3B82F6] transition-colors">PHONE</a>
+                  <a href={`mailto:${email}`} className="hover:text-[#3B82F6] border-b border-transparent hover:border-[#3B82F6] transition-colors uppercase">EMAIL</a>
+                  {phone && (
+                    <>
+                      <span>/</span>
+                      <a href={`tel:${phone}`} className="hover:text-[#3B82F6] border-b border-transparent hover:border-[#3B82F6] transition-colors uppercase">PHONE</a>
+                    </>
+                  )}
                 </div>
               </footer>
             </>
