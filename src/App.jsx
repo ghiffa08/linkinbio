@@ -3,6 +3,8 @@ import useSWR from 'swr';
 import { gsap } from 'gsap';
 import { supabase } from './lib/supabaseClient';
 import { slugify } from './utils/slugify';
+import { useInstagramFeed } from './hooks/useInstagramFeed';
+import { InstagramFeed } from './components/InstagramFeed';
 
 const fetchLinks = async () => {
   const { data, error } = await supabase
@@ -37,26 +39,14 @@ const fetchLatestProject = async () => {
   return data;
 };
 
-const fetchLatestArticle = async () => {
-  const { data, error } = await supabase
-    .from('articles')
-    .select('*')
-    .eq('status', 'published')
-    .order('published_at', { ascending: false })
-    .limit(1)
-    .single();
-  if (error && error.code !== 'PGRST116') throw error;
-  return data;
-};
-
 export default function App() {
   const { data: links, isLoading: isLinksLoading } = useSWR('bio_links', fetchLinks);
   const { data: info, isLoading: isInfoLoading } = useSWR('personal_info', fetchPersonalInfo);
   const { data: settings, isLoading: isSettingsLoading } = useSWR('general_settings', fetchSettings);
   const { data: latestProject, isLoading: isProjectLoading } = useSWR('latest_project', fetchLatestProject);
-  const { data: latestArticle, isLoading: isArticleLoading } = useSWR('latest_article', fetchLatestArticle);
+  const { data: instagramPosts, error: instagramError, isLoading: isInstagramLoading } = useInstagramFeed();
 
-  const isLoading = isLinksLoading || isInfoLoading || isSettingsLoading || isProjectLoading || isArticleLoading;
+  const isLoading = isLinksLoading || isInfoLoading || isSettingsLoading || isProjectLoading || isInstagramLoading;
 
   // Initialize GSAP Animations when data is ready
   useEffect(() => {
@@ -196,29 +186,8 @@ export default function App() {
                 </section>
               )}
 
-              {/* 4. LATEST ARTICLE */}
-              {latestArticle && (
-                <section className="px-6 pb-4 pt-1 anim-slide-up opacity-0">
-                  <div className="font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
-                    [ LATEST ARTICLE ]
-                  </div>
-                  <a 
-                    href={`https://ghiffa.dev/article/${latestArticle.slug}`} 
-                    target="_blank" rel="noreferrer"
-                    className="block relative overflow-hidden group hairline-t hairline-b hairline-l hairline-r bg-white text-[#111111] p-6 hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-500"
-                  >
-                    <h2 className="text-xl font-black uppercase tracking-tight mb-2 relative z-10 line-clamp-2 leading-snug">
-                      {latestArticle.title}
-                    </h2>
-                    <p className="font-mono text-xs text-gray-500 group-hover:text-gray-400 relative z-10 transition-colors">
-                      {latestArticle.read_time} ↗
-                    </p>
-                    <div className="absolute -right-4 -bottom-4 text-8xl font-black text-black group-hover:text-white opacity-5 transition-opacity transform -rotate-12 pointer-events-none">
-                      A
-                    </div>
-                  </a>
-                </section>
-              )}
+              {/* 4. INSTAGRAM FEED */}
+              <InstagramFeed posts={instagramPosts} error={instagramError} />
 
               {/* 5. LINK LIST */}
               {directoryLinks.length > 0 && (
