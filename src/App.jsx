@@ -152,6 +152,10 @@ export default function App() {
                     </>
                   )}
                 </h1>
+
+                <div className="sr-only">
+                  Welcome to the official digital links directory of Haikal Jibran Al-Ghiffarry. As an IoT Engineer and Full-stack Developer from Universitas Kuningan, I bridge the gap between hardware and software. Find my official website, GitHub, LinkedIn, and latest projects below.
+                </div>
                 
                 <div className="font-mono text-xs text-[#3B82F6] uppercase tracking-widest mb-4">
                   {info?.headline || 'Building the bridge between bits and atoms.'}
@@ -196,24 +200,23 @@ export default function App() {
                     [ DIRECTORY ]
                   </div>
                   
-                  <div className="flex flex-col w-full hairline-t">
-                    {directoryLinks.map((link, idx) => (
+                  <ul className="flex flex-col w-full hairline-t list-none p-0 m-0">
+                    <li>
                       <a 
-                        key={link.id}
-                        href={link.url}
+                        href="https://ghiffa.dev" 
                         target="_blank" rel="noreferrer"
                         className="group flex items-center justify-between p-5 sm:p-6 hairline-b hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-300"
                       >
                         <div className="flex items-center space-x-4 sm:space-x-6">
                           <span className="font-mono text-xs text-gray-400 group-hover:text-[#3B82F6] transition-colors">
-                            {String(idx + 1).padStart(2, '0')}.
+                            00.
                           </span>
                           <div>
                             <h3 className="font-bold text-lg uppercase tracking-tight mb-0.5">
-                              {link.title}
+                              Official Website
                             </h3>
                             <p className="font-mono text-[10px] text-gray-500 group-hover:text-gray-400 uppercase">
-                              {link.subtitle}
+                              ghiffa.dev Portfolio
                             </p>
                           </div>
                         </div>
@@ -223,8 +226,36 @@ export default function App() {
                           ↗
                         </div>
                       </a>
+                    </li>
+                    {directoryLinks.map((link, idx) => (
+                      <li key={link.id}>
+                        <a 
+                          href={link.url}
+                          target="_blank" rel="noreferrer"
+                          className="group flex items-center justify-between p-5 sm:p-6 hairline-b hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-300"
+                        >
+                          <div className="flex items-center space-x-4 sm:space-x-6">
+                            <span className="font-mono text-xs text-gray-400 group-hover:text-[#3B82F6] transition-colors">
+                              {String(idx + 1).padStart(2, '0')}.
+                            </span>
+                            <div>
+                              <h3 className="font-bold text-lg uppercase tracking-tight mb-0.5">
+                                {link.title}
+                              </h3>
+                              <p className="font-mono text-[10px] text-gray-500 group-hover:text-gray-400 uppercase">
+                                {link.subtitle}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {/* Arrow Icon */}
+                          <div className="text-gray-300 group-hover:text-[#FAFAFA] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 font-mono text-lg">
+                            ↗
+                          </div>
+                        </a>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </section>
               )}
 
