@@ -193,7 +193,43 @@ export default function App() {
               {/* 4. INSTAGRAM FEED */}
               <InstagramFeed posts={instagramPosts} error={instagramError} />
 
-              {/* 5. LINK LIST */}
+              {/* 5. COURSE CTA */}
+              <section className="px-6 py-4 anim-slide-up opacity-0">
+                <div className="font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
+                  [ NEW PLATFORM ]
+                </div>
+                <a
+                  href="https://course.ghiffa.dev"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group block border border-[#111111] p-5 hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-300"
+                >
+                  <div className="flex items-start justify-between gap-4 mb-3">
+                    <div>
+                      <span className="font-mono text-[10px] text-gray-400 group-hover:text-gray-500 uppercase tracking-widest block mb-1">
+                        Coding Course
+                      </span>
+                      <h2 className="text-xl font-black uppercase tracking-tighter leading-none">
+                        course.ghiffa.dev
+                      </h2>
+                    </div>
+                    <span className="font-mono text-lg text-gray-300 group-hover:text-[#FAFAFA] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0">
+                      ↗
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 group-hover:text-gray-400 leading-relaxed mb-4">
+                    Learn software engineering through an XP-based, streak-driven system. Built like a game, engineered for the real world.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#111111] group-hover:bg-white animate-pulse shrink-0" />
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#111111] group-hover:text-gray-300">
+                      Coming Soon
+                    </span>
+                  </div>
+                </a>
+              </section>
+
+              {/* 6. LINK LIST */}
               {directoryLinks.length > 0 && (
                 <section className="flex-1 flex flex-col mt-4 anim-slide-up opacity-0">
                   <div className="px-6 font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
@@ -259,7 +295,7 @@ export default function App() {
                 </section>
               )}
 
-              {/* 6. FOOTER */}
+              {/* 7. FOOTER */}
               <footer className="mt-auto p-6 hairline-t flex flex-col items-center justify-center bg-[#FAFAFA] anim-slide-up opacity-0">
                 <div className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-2 text-center">
                   © {new Date().getFullYear()} {fullName}
