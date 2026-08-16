@@ -199,7 +199,7 @@ export default function App() {
                   [ NEW PLATFORM ]
                 </div>
                 <a
-                  href="https://course.ghiffa.dev"
+                  href="https://skillstreak.web.id"
                   target="_blank"
                   rel="noreferrer"
                   className="group block border border-[#111111] p-5 hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-300"
@@ -210,7 +210,7 @@ export default function App() {
                         Coding Course
                       </span>
                       <h2 className="text-xl font-black uppercase tracking-tighter leading-none">
-                        course.ghiffa.dev
+                        skillstreak.web.id
                       </h2>
                     </div>
                     <span className="font-mono text-lg text-gray-300 group-hover:text-[#FAFAFA] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0">
