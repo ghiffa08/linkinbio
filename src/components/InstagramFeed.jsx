@@ -14,22 +14,8 @@ const formatDate = (timestamp) => {
 };
 
 export function InstagramFeed({ posts, error }) {
-  if (error) {
-    return (
-      <section className="px-6 pb-4 pt-1 anim-slide-up opacity-0">
-        <div className="font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
-          [ INSTAGRAM JOURNAL ]
-        </div>
-        <div className="p-6 border border-red-200 bg-red-50/50 text-center rounded-sm">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-red-600 font-bold mb-1">
-            Failed to load feed
-          </p>
-          <p className="text-[10px] text-red-500 font-mono">
-            {error.message || 'Please check your IG_ACCESS_TOKEN configuration.'}
-          </p>
-        </div>
-      </section>
-    );
+  if (error && (!posts || posts.length === 0)) {
+    return null;
   }
 
   const visiblePosts = posts?.slice(0, 4) || [];
@@ -39,9 +25,19 @@ export function InstagramFeed({ posts, error }) {
   }
 
   return (
-    <section className="px-6 pb-4 pt-1 anim-slide-up opacity-0">
-      <div className="font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
-        [ INSTAGRAM JOURNAL ]
+    <section className="px-5 sm:px-6 pb-4 pt-1 anim-slide-up">
+      <div className="flex items-center justify-between mb-3 px-1">
+        <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
+          // Instagram Journal
+        </span>
+        <a
+          href="https://instagram.com/haikaljibraan"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-mono text-[10px] text-gray-500 hover:text-[#FF5500] transition-colors"
+        >
+          @haikaljibraan ↗
+        </a>
       </div>
       
       <div className="flex flex-col gap-3">
@@ -53,43 +49,44 @@ export function InstagramFeed({ posts, error }) {
               href={post.permalink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex gap-4 p-4 bg-white border border-[#E5E5E5] hover:border-[#111111] transition-all duration-300 group"
+              className="flex gap-3.5 p-3 sm:p-3.5 bg-white rounded-2xl border border-gray-100 hover:border-gray-200 shadow-xs hover:shadow-md transition-all duration-300 group select-none no-underline"
             >
-              {/* Grayscale thumbnail image that reveals color on hover */}
-              <div className="w-16 h-16 aspect-square overflow-hidden bg-[#E5E5E5] flex-shrink-0 border border-[#E5E5E5] p-0.5 relative">
+              {/* Clean square visual matching portfolio cards */}
+              <div className="w-18 h-18 sm:w-20 sm:h-20 aspect-square rounded-xl overflow-hidden bg-neutral-900 shrink-0 relative">
                 <img
                   src={imgSrc}
                   alt={post.caption || 'Instagram Post'}
                   loading="lazy"
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-out"
+                  className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-500 ease-out"
                 />
                 {post.media_type === 'VIDEO' && (
-                  <div className="absolute top-1 right-1 bg-[#111111]/80 text-white font-mono text-[8px] px-1 py-0.5 leading-none uppercase">
+                  <div className="absolute top-1.5 right-1.5 bg-black/70 backdrop-blur-xs text-white font-mono text-[8px] px-1.5 py-0.5 rounded-sm">
                     ▶
                   </div>
                 )}
               </div>
 
               {/* Text metadata and caption */}
-              <div className="flex flex-col justify-between flex-1 min-w-0">
+              <div className="flex flex-col justify-between flex-1 min-w-0 py-0.5">
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <span className="font-mono text-[9px] font-bold text-gray-400 group-hover:text-[#3B82F6] transition-colors">
+                    <span className="font-mono text-[10px] font-semibold text-gray-400 group-hover:text-[#FF5500] transition-colors">
                       {formatDate(post.timestamp)}
                     </span>
                     {post.media_type === 'CAROUSEL_ALBUM' && (
-                      <span className="font-mono text-[7px] text-gray-400 bg-gray-50 border border-[#E5E5E5] px-1 py-0.2 uppercase scale-90">
+                      <span className="font-mono text-[8px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-full font-medium">
                         CAROUSEL
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-bold uppercase tracking-tight line-clamp-2 text-[#111111] leading-snug group-hover:text-gray-600 transition-colors">
-                    {post.caption || 'View on Instagram'}
+                  <p className="text-[13px] font-semibold text-gray-900 group-hover:text-[#FF5500] line-clamp-2 leading-snug transition-colors">
+                    {post.caption || 'View full post and discussion on Instagram.'}
                   </p>
                 </div>
                 
-                <div className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#111111] mt-2 flex items-center gap-1 group-hover:text-[#3B82F6] transition-colors">
-                  View Post <span className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300">↗</span>
+                <div className="font-mono text-[10px] font-semibold uppercase tracking-wider text-gray-400 group-hover:text-[#FF5500] mt-1.5 flex items-center gap-1 transition-colors">
+                  <span>View Post</span>
+                  <span className="transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200">↗</span>
                 </div>
               </div>
             </a>

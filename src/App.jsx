@@ -1,10 +1,70 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import useSWR from 'swr';
-import { gsap } from 'gsap';
+import { 
+  Globe, 
+  Mail, 
+  Flame, 
+  ArrowUpRight, 
+  Sparkles,
+  Layers,
+  Code2
+} from 'lucide-react';
 import { supabase } from './lib/supabaseClient';
 import { slugify } from './utils/slugify';
 import { useInstagramFeed } from './hooks/useInstagramFeed';
 import { InstagramFeed } from './components/InstagramFeed';
+
+// Brand SVGs matching ghiffa.dev portfolio
+const GithubIcon = ({ className = 'w-4 h-4' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+  </svg>
+);
+
+const LinkedinIcon = ({ className = 'w-4 h-4' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+  </svg>
+);
+
+const InstagramIcon = ({ className = 'w-4 h-4' }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+  </svg>
+);
+
+// Map link items to appropriate icons
+const getLinkIcon = (title = '', url = '') => {
+  const lower = (title + ' ' + url).toLowerCase();
+  if (lower.includes('github')) return <GithubIcon className="w-4 h-4 text-[#18181B]" />;
+  if (lower.includes('linkedin')) return <LinkedinIcon className="w-4 h-4 text-[#0A66C2]" />;
+  if (lower.includes('instagram')) return <InstagramIcon className="w-4 h-4 text-[#E1306C]" />;
+  if (lower.includes('skillstreak')) return <Flame className="w-4 h-4 text-[#FF5500]" />;
+  if (lower.includes('mail') || lower.includes('@')) return <Mail className="w-4 h-4 text-[#EA4335]" />;
+  if (lower.includes('portfolio') || lower.includes('website') || lower.includes('ghiffa.dev')) return <Globe className="w-4 h-4 text-[#FF5500]" />;
+  return <Layers className="w-4 h-4 text-gray-500" />;
+};
+
+const DEFAULT_INFO = {
+  full_name: 'Haikal Jibran Al-Ghiffarry',
+  headline: 'Building the bridge between bits and atoms.',
+  role: 'IoT Engineer & Fullstack Web Developer',
+  email: 'hello@ghiffa.dev',
+  phone_number: '+6285156958580',
+};
+
+const DEFAULT_LINKS = [
+  { id: '1', title: 'Main Portfolio Website', subtitle: 'ghiffa.dev', url: 'https://ghiffa.dev', featured: false },
+  { id: '2', title: 'LinkedIn Profile', subtitle: 'Professional Network', url: 'https://linkedin.com/in/haikal-jibran-al-ghiffarry', featured: false },
+  { id: '3', title: 'GitHub Repositories', subtitle: 'Open Source & Code', url: 'https://github.com/ghiffa08', featured: false },
+  { id: '4', title: 'Instagram', subtitle: '@haikaljibraan', url: 'https://instagram.com/haikaljibraan', featured: false },
+  { id: '5', title: 'Send an Email', subtitle: 'hello@ghiffa.dev', url: 'mailto:hello@ghiffa.dev', featured: false },
+];
+
+const DEFAULT_PROJECT = {
+  title: 'Kredit Raksa Analytica',
+  category: 'FEATURED WORK',
+};
 
 const fetchLinks = async () => {
   const { data, error } = await supabase
@@ -22,12 +82,6 @@ const fetchPersonalInfo = async () => {
   return data;
 };
 
-const fetchSettings = async () => {
-  const { data, error } = await supabase.from('general_settings').select('*').single();
-  if (error) throw error;
-  return data;
-};
-
 const fetchLatestProject = async () => {
   const { data, error } = await supabase
     .from('projects')
@@ -40,281 +94,285 @@ const fetchLatestProject = async () => {
 };
 
 export default function App() {
-  const { data: links, isLoading: isLinksLoading } = useSWR('bio_links', fetchLinks);
-  const { data: info, isLoading: isInfoLoading } = useSWR('personal_info', fetchPersonalInfo);
-  const { data: settings, isLoading: isSettingsLoading } = useSWR('general_settings', fetchSettings);
-  const { data: latestProject, isLoading: isProjectLoading } = useSWR('latest_project', fetchLatestProject);
-  const { data: instagramPosts, error: instagramError, isLoading: isInstagramLoading } = useInstagramFeed();
+  const { data: rawLinks } = useSWR('bio_links', fetchLinks, { fallbackData: DEFAULT_LINKS });
+  const { data: rawInfo } = useSWR('personal_info', fetchPersonalInfo, { fallbackData: DEFAULT_INFO });
+  const { data: rawProject } = useSWR('latest_project', fetchLatestProject, { fallbackData: DEFAULT_PROJECT });
+  const { data: instagramPosts, error: instagramError } = useInstagramFeed();
 
-  const isLoading = isLinksLoading || isInfoLoading || isSettingsLoading || isProjectLoading || isInstagramLoading;
+  const [aiActive, setAiActive] = useState(false);
 
-  // Initialize GSAP Animations when data is ready
-  useEffect(() => {
-    if (isLoading) return;
+  const info = rawInfo || DEFAULT_INFO;
+  const links = rawLinks && rawLinks.length > 0 ? rawLinks : DEFAULT_LINKS;
+  const latestProject = rawProject || DEFAULT_PROJECT;
 
-    const ctx = gsap.context(() => {
-      // Small delay to ensure React has fully committed the DOM
-      gsap.fromTo('.anim-fade-down', 
-        { y: -20, opacity: 0 }, 
-        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', stagger: 0.05, delay: 0.05 }
-      );
+  const directoryLinks = links.filter(l => !l.featured);
 
-      gsap.fromTo('.anim-slide-up', 
-        { y: 30, opacity: 0 }, 
-        { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', stagger: 0.05, delay: 0.15 }
-      );
-    });
-
-    return () => ctx.revert(); // Cleanup GSAP context on unmount
-  }, [isLoading]);
-
-  const directoryLinks = links?.filter(l => !l.featured) || [];
-
-  // Parse Personal Info safely
-  const fullName = info?.full_name || 'HAIKAL JIBRAN';
-  const nameParts = fullName.split(' ');
-  const headline_1 = nameParts.slice(0, 2).join(' ');
-  const headline_2 = nameParts.slice(2).join(' ');
-  
-  const appName = settings?.app_name || 'GHIFFA.DEV';
-  const email = info?.email || 'haikaljibran.dev@gmail.com';
-  const phone = info?.phone_number || '+6285156958580';
+  const fullName = info.full_name || 'Haikal Jibran Al-Ghiffarry';
+  const headline = info.headline || 'Building the bridge between bits and atoms.';
+  const role = info.role || 'IoT Engineer & Fullstack Web Developer';
+  const email = info.email || 'hello@ghiffa.dev';
+  const phone = info.phone_number || '+6285156958580';
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{__html: `
-        :root {
-          --bg: #FAFAFA;
-          --text: #111111;
-          --grid-line: #E5E5E5;
-          --accent: #3B82F6;
-        }
-
-        body {
-          background-color: var(--bg);
-          color: var(--text);
-          font-family: 'Inter', sans-serif;
-          -webkit-font-smoothing: antialiased;
-        }
-
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .hairline-b { border-bottom: 1px solid var(--grid-line); }
-        .hairline-t { border-top: 1px solid var(--grid-line); }
-        .hairline-r { border-right: 1px solid var(--grid-line); }
-        .hairline-l { border-left: 1px solid var(--grid-line); }
+    <div className="min-h-screen w-full bg-[#FAFAFA] text-[#141414] font-sans antialiased selection:bg-[#FF5500] selection:text-white flex justify-center p-0 sm:p-5 md:p-8">
+      
+      {/* Outer Shell: Dot Grid Canvas Container with clean border on larger screens */}
+      <div className="w-full max-w-[540px] min-h-screen sm:min-h-0 bg-white sm:rounded-3xl flex flex-col relative sm:border sm:border-gray-200/80 sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.07)] overflow-hidden">
         
-        ::selection { background: var(--text); color: var(--bg); }
-        
-        /* Noise Overlay for Editorial Vibe */
-        .bg-noise {
-          position: fixed;
-          top: 0; left: 0; width: 100vw; height: 100vh;
-          pointer-events: none;
-          z-index: 50;
-          opacity: 0.03;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-      `}} />
+        {/* Architectural Dot-Grid Background Canvas matching ghiffa.dev */}
+        <div className="absolute inset-0 bg-architectural-dots pointer-events-none opacity-90 z-0" />
 
-      <div className="bg-noise"></div>
+        {/* 1. TOP STATUS BAR (Figma / Minimalist Header) */}
+        <header className="relative z-10 flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white/80 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-mono text-[11px] font-semibold tracking-wider text-gray-500 uppercase">
+              ghiffa.dev / links
+            </span>
+          </div>
 
-      <div className="min-h-screen flex justify-center w-full bg-[#FAFAFA] p-0 sm:p-4 md:p-8">
-        
-        <div className="w-full max-w-[480px] min-h-screen sm:min-h-0 bg-[#FAFAFA] flex flex-col relative sm:hairline-l sm:hairline-r sm:border-[#E5E5E5] sm:shadow-2xl sm:shadow-black/5 overflow-hidden">
+          {/* AI Mode Pill Toggle matching portfolio hero */}
+          <button
+            type="button"
+            onClick={() => setAiActive(!aiActive)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100/90 hover:bg-gray-200/80 border border-gray-200 text-[10px] font-mono font-semibold transition-all cursor-pointer shadow-2xs"
+            title="Toggle AI Persona Mode"
+          >
+            <Sparkles className={`w-3 h-3 ${aiActive ? 'text-[#FF5500]' : 'text-gray-400'}`} />
+            <span className={aiActive ? 'text-[#FF5500]' : 'text-gray-600'}>
+              AI Mode: {aiActive ? 'ON' : 'OFF'}
+            </span>
+          </button>
+        </header>
+
+        <div className="relative z-10 flex-1 flex flex-col pb-6">
           
-          {/* 1. TOP BAR */}
-          <header className="flex justify-between items-center p-4 hairline-b anim-fade-down opacity-0 font-mono text-[10px] sm:text-xs font-bold tracking-widest uppercase">
-            <div>[ VOL. 01 ]</div>
-            <div className="text-center">{appName}</div>
-            <div className="text-right">KUNINGAN</div>
-          </header>
-
-          {isLoading ? (
-            <div className="flex-1 p-6 space-y-8 animate-pulse">
-              <div className="flex justify-center"><div className="h-16 w-3/4 bg-gray-200" /></div>
-              <div className="flex justify-center"><div className="h-4 w-1/2 bg-gray-200" /></div>
-              <div className="h-32 w-full bg-gray-200 mt-12" />
-              <div className="h-32 w-full bg-gray-200 mt-4" />
-              <div className="space-y-4 mt-8">
-                {[1,2,3].map(i => <div key={i} className="h-16 w-full bg-gray-200" />)}
+          {/* 2. HERO FIGMA CANVAS IDENTIFIER */}
+          <section className="pt-8 pb-6 px-6 text-center relative">
+            
+            {/* Figma Bounding Box wrapping ghiffa.dev */}
+            <div className="inline-block relative px-6 py-3.5 mb-4 select-none">
+              <div className="figma-bbox bg-white/40 backdrop-blur-2xs">
+                {/* 8 Figma resize handles */}
+                <span className="figma-handle -top-1 -left-1" />
+                <span className="figma-handle -top-1 left-1/2 -translate-x-1/2" />
+                <span className="figma-handle -top-1 -right-1" />
+                <span className="figma-handle top-1/2 -left-1 -translate-y-1/2" />
+                <span className="figma-handle top-1/2 -right-1 -translate-y-1/2" />
+                <span className="figma-handle -bottom-1 -left-1" />
+                <span className="figma-handle -bottom-1 left-1/2 -translate-x-1/2" />
+                <span className="figma-handle -bottom-1 -right-1" />
               </div>
+
+              {/* Multiplayer Cursor Badge pinned to bounding box */}
+              <div className="absolute -top-3.5 -right-2 sm:-right-3 flex items-center gap-1 bg-[#FF5500] text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded-[3px] shadow-sm z-30 pointer-events-none">
+                <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 16 16">
+                  <path d="M1 1L6.5 14.5L8.8 8.8L14.5 6.5L1 1Z" />
+                </svg>
+                <span>{aiActive ? 'Claude 3.7 (AI)' : 'Ghiffa (Lead)'}</span>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#141414] font-sans m-0 leading-tight">
+                ghiffa.dev
+              </h1>
             </div>
-          ) : (
-            <>
-              {/* 2. HERO / PROFILE */}
-              <section className="pt-12 pb-8 px-6 text-center anim-fade-down opacity-0">
-                <h1 className="text-4xl sm:text-5xl font-black tracking-tighter uppercase leading-[0.85] mb-4">
-                  {headline_1}
-                  {headline_2 && (
-                    <>
-                      <br />
-                      <span className="text-gray-400">{headline_2}</span>
-                    </>
-                  )}
-                </h1>
 
-                <div className="sr-only">
-                  Welcome to the official digital links directory of Haikal Jibran Al-Ghiffarry. As an IoT Engineer and Full-stack Developer from Universitas Kuningan, I bridge the gap between hardware and software. Find my official website, GitHub, LinkedIn, and latest projects below.
-                </div>
-                
-                <div className="font-mono text-xs text-[#3B82F6] uppercase tracking-widest mb-4">
-                  {info?.headline || 'Building the bridge between bits and atoms.'}
-                </div>
-                
-                <p className="text-sm font-medium text-gray-600 px-4">
-                  {info?.role || 'IoT Engineer | Fullstack Developer'}
-                </p>
-              </section>
+            {/* Subtitle / Bio details */}
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight mb-1.5">
+              {fullName}
+            </h2>
+            
+            <p className="font-mono text-xs text-[#FF5500] font-semibold mb-2">
+              {aiActive ? '// Autonomous Full-Stack AI Engineer Persona' : headline}
+            </p>
+            
+            <p className="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">
+              {role} • Kuningan, West Java, ID
+            </p>
 
-              {/* 3. LATEST PROJECT */}
-              {latestProject && (
-                <section className="px-6 py-4 anim-slide-up opacity-0">
-                  <div className="font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
-                    [ LATEST PROJECT ]
+            {/* Quick Contact & Social Floating Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+              <a
+                href={`mailto:${email}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/90 text-xs font-medium text-gray-700 hover:text-black hover:border-gray-400 shadow-2xs hover:shadow-xs transition-all"
+              >
+                <Mail className="w-3.5 h-3.5 text-[#EA4335]" />
+                <span>Email</span>
+              </a>
+              <a
+                href="https://github.com/ghiffa08"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/90 text-xs font-medium text-gray-700 hover:text-black hover:border-gray-400 shadow-2xs hover:shadow-xs transition-all"
+              >
+                <GithubIcon className="w-3.5 h-3.5" />
+                <span>GitHub</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/haikal-jibran-al-ghiffarry"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/90 text-xs font-medium text-gray-700 hover:text-black hover:border-gray-400 shadow-2xs hover:shadow-xs transition-all"
+              >
+                <LinkedinIcon className="w-3.5 h-3.5 text-[#0A66C2]" />
+                <span>LinkedIn</span>
+              </a>
+            </div>
+          </section>
+
+          {/* 3. FEATURED PLATFORM: SKILLSTREAK.ID (Signature Flame Orange Banner) */}
+          <section className="px-5 sm:px-6 py-2">
+            <div className="font-mono text-[10px] text-gray-400 mb-2 px-1 uppercase tracking-widest font-semibold">
+              // Flagship Platform
+            </div>
+            <a
+              href="https://skillstreak.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative block p-5 rounded-2xl bg-[#111111] text-white border border-neutral-800 shadow-md hover:shadow-xl hover:border-[#FF5500]/50 transition-all duration-300 overflow-hidden no-underline"
+            >
+              {/* Orange glowing aura */}
+              <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-[#FF5500]/20 blur-2xl group-hover:bg-[#FF5500]/35 transition-all pointer-events-none" />
+
+              <div className="flex items-start justify-between gap-4 mb-2.5 relative z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-[#FF5500] flex items-center justify-center shadow-xs">
+                    <Flame className="w-4 h-4 text-white" />
                   </div>
-                  <a 
-                    href={`https://ghiffa.dev/project/${slugify(latestProject.title)}`} 
-                    target="_blank" rel="noreferrer"
-                    className="block relative overflow-hidden group hairline-t hairline-b hairline-l hairline-r bg-[#111111] text-[#FAFAFA] p-6 hover:bg-[#3B82F6] transition-colors duration-500"
-                  >
-                    <h2 className="text-2xl font-black uppercase tracking-tight mb-2 relative z-10 truncate">
-                      {latestProject.title}
+                  <div>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-orange-400 font-bold block">
+                      Gamified Coding Platform
+                    </span>
+                    <h2 className="text-lg font-bold tracking-tight text-white m-0">
+                      skillstreak.id
                     </h2>
-                    <p className="font-mono text-xs text-gray-400 group-hover:text-blue-100 relative z-10 transition-colors truncate">
-                      {latestProject.category} ↗
-                    </p>
-                    <div className="absolute -right-4 -bottom-4 text-8xl font-black text-white opacity-5 group-hover:opacity-10 transition-opacity transform rotate-12 pointer-events-none">
-                      P
-                    </div>
-                  </a>
-                </section>
-              )}
-
-              {/* 4. INSTAGRAM FEED */}
-              <InstagramFeed posts={instagramPosts} error={instagramError} />
-
-              {/* 5. COURSE CTA */}
-              <section className="px-6 py-4 anim-slide-up opacity-0">
-                <div className="font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
-                  [ NEW PLATFORM ]
+                  </div>
                 </div>
-                <a
-                  href="https://skillstreak.web.id"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group block border border-[#111111] p-5 hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-300"
-                >
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <div>
-                      <span className="font-mono text-[10px] text-gray-400 group-hover:text-gray-500 uppercase tracking-widest block mb-1">
-                        Coding Course
+                <div className="w-7 h-7 rounded-full bg-white/10 group-hover:bg-[#FF5500] text-white flex items-center justify-center transition-colors">
+                  <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </div>
+              </div>
+
+              <p className="text-xs text-neutral-300 leading-relaxed mb-4 relative z-10 font-normal">
+                The fastest path from zero to deployable engineer, built like a game and engineered for the real world.
+              </p>
+
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#FF5500] animate-ping shrink-0" />
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-orange-300 font-semibold">
+                    Live Platform
+                  </span>
+                </div>
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-[#FF5500] hover:bg-[#E64D00] px-3 py-1 rounded-full shadow-xs transition-colors">
+                  Explore ↗
+                </span>
+              </div>
+            </a>
+          </section>
+
+          {/* 4. LATEST SELECTED WORK CARD */}
+          {latestProject && (
+            <section className="px-5 sm:px-6 py-2">
+              <div className="font-mono text-[10px] text-gray-400 mb-2 px-1 uppercase tracking-widest font-semibold">
+                // Latest Selected Work
+              </div>
+              <a 
+                href={`https://ghiffa.dev/project/${slugify(latestProject.title)}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group block p-4 bg-white rounded-2xl border border-gray-150 hover:border-gray-300 shadow-xs hover:shadow-md transition-all duration-300 select-none no-underline"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-800 shrink-0 group-hover:bg-[#FF5500]/10 group-hover:text-[#FF5500] transition-colors">
+                      <Code2 className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-[#FF5500] font-semibold block truncate">
+                        {latestProject.category || 'FEATURED WORK'}
                       </span>
-                      <h2 className="text-xl font-black uppercase tracking-tighter leading-none">
-                        skillstreak.web.id
-                      </h2>
+                      <h3 className="text-sm font-bold text-gray-950 group-hover:text-[#FF5500] transition-colors truncate m-0">
+                        {latestProject.title}
+                      </h3>
                     </div>
-                    <span className="font-mono text-lg text-gray-300 group-hover:text-[#FAFAFA] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 shrink-0">
-                      ↗
-                    </span>
                   </div>
-                  <p className="text-xs text-gray-500 group-hover:text-gray-400 leading-relaxed mb-4">
-                    Learn software engineering through an XP-based, streak-driven system. Built like a game, engineered for the real world.
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#111111] group-hover:bg-white animate-pulse shrink-0" />
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#111111] group-hover:text-gray-300">
-                      Coming Soon
-                    </span>
-                  </div>
-                </a>
-              </section>
-
-              {/* 6. LINK LIST */}
-              {directoryLinks.length > 0 && (
-                <section className="flex-1 flex flex-col mt-4 anim-slide-up opacity-0">
-                  <div className="px-6 font-mono text-[10px] text-gray-400 mb-2 uppercase tracking-widest">
-                    [ DIRECTORY ]
-                  </div>
-                  
-                  <ul className="flex flex-col w-full hairline-t list-none p-0 m-0">
-                    <li>
-                      <a 
-                        href="https://ghiffa.dev" 
-                        target="_blank" rel="noreferrer"
-                        className="group flex items-center justify-between p-5 sm:p-6 hairline-b hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-300"
-                      >
-                        <div className="flex items-center space-x-4 sm:space-x-6">
-                          <span className="font-mono text-xs text-gray-400 group-hover:text-[#3B82F6] transition-colors">
-                            00.
-                          </span>
-                          <div>
-                            <h3 className="font-bold text-lg uppercase tracking-tight mb-0.5">
-                              Official Website
-                            </h3>
-                            <p className="font-mono text-[10px] text-gray-500 group-hover:text-gray-400 uppercase">
-                              ghiffa.dev Portfolio
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* Arrow Icon */}
-                        <div className="text-gray-300 group-hover:text-[#FAFAFA] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 font-mono text-lg">
-                          ↗
-                        </div>
-                      </a>
-                    </li>
-                    {directoryLinks.map((link, idx) => (
-                      <li key={link.id}>
-                        <a 
-                          href={link.url}
-                          target="_blank" rel="noreferrer"
-                          className="group flex items-center justify-between p-5 sm:p-6 hairline-b hover:bg-[#111111] hover:text-[#FAFAFA] transition-colors duration-300"
-                        >
-                          <div className="flex items-center space-x-4 sm:space-x-6">
-                            <span className="font-mono text-xs text-gray-400 group-hover:text-[#3B82F6] transition-colors">
-                              {String(idx + 1).padStart(2, '0')}.
-                            </span>
-                            <div>
-                              <h3 className="font-bold text-lg uppercase tracking-tight mb-0.5">
-                                {link.title}
-                              </h3>
-                              <p className="font-mono text-[10px] text-gray-500 group-hover:text-gray-400 uppercase">
-                                {link.subtitle}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          {/* Arrow Icon */}
-                          <div className="text-gray-300 group-hover:text-[#FAFAFA] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 font-mono text-lg">
-                            ↗
-                          </div>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-
-              {/* 7. FOOTER */}
-              <footer className="mt-auto p-6 hairline-t flex flex-col items-center justify-center bg-[#FAFAFA] anim-slide-up opacity-0">
-                <div className="font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-2 text-center">
-                  © {new Date().getFullYear()} {fullName}
+                  <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-black transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
                 </div>
-                <div className="flex space-x-4 font-mono text-[10px] text-[#111111] font-bold">
-                  <a href={`mailto:${email}`} className="hover:text-[#3B82F6] border-b border-transparent hover:border-[#3B82F6] transition-colors uppercase">EMAIL</a>
-                  {phone && (
-                    <>
-                      <span>/</span>
-                      <a href={`tel:${phone}`} className="hover:text-[#3B82F6] border-b border-transparent hover:border-[#3B82F6] transition-colors uppercase">PHONE</a>
-                    </>
-                  )}
-                </div>
-              </footer>
-            </>
+              </a>
+            </section>
           )}
 
+          {/* 5. DIRECTORY LINKS (Custom Bio Links) */}
+          {directoryLinks.length > 0 && (
+            <section className="px-5 sm:px-6 py-2">
+              <div className="font-mono text-[10px] text-gray-400 mb-2.5 px-1 uppercase tracking-widest font-semibold">
+                // Directory & Socials
+              </div>
+              
+              <div className="flex flex-col gap-2.5">
+                {directoryLinks.map((link) => (
+                  <a 
+                    key={link.id}
+                    href={link.url}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-150 hover:border-gray-300 shadow-xs hover:shadow-md transition-all duration-300 no-underline"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-gray-50 text-gray-700 group-hover:bg-orange-50 group-hover:text-[#FF5500] flex items-center justify-center shrink-0 transition-colors">
+                        {getLinkIcon(link.title, link.url)}
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#FF5500] transition-colors truncate m-0">
+                          {link.title}
+                        </h3>
+                        {link.subtitle && (
+                          <p className="font-mono text-[10px] text-gray-500 truncate m-0">
+                            {link.subtitle}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-black transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* 6. INSTAGRAM FEED SECTION */}
+          <InstagramFeed posts={instagramPosts} error={instagramError} />
+
+          {/* 7. CLEAN FOOTER */}
+          <footer className="mt-auto pt-6 px-6 border-t border-gray-150/80 flex flex-col items-center justify-center text-center">
+            <div className="font-mono text-[11px] text-gray-400 mb-2">
+              © {new Date().getFullYear()} {fullName}
+            </div>
+            <div className="flex items-center gap-3 font-mono text-[10px] font-semibold text-gray-600">
+              <a 
+                href={`mailto:${email}`} 
+                className="hover:text-[#FF5500] transition-colors no-underline"
+              >
+                {email}
+              </a>
+              {phone && (
+                <>
+                  <span>•</span>
+                  <a 
+                    href={`tel:${phone}`} 
+                    className="hover:text-[#FF5500] transition-colors no-underline"
+                  >
+                    {phone}
+                  </a>
+                </>
+              )}
+            </div>
+          </footer>
+
         </div>
+
       </div>
-    </>
+    </div>
   );
 }
