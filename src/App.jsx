@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import useSWR from 'swr';
 import { 
   Globe, 
   Mail, 
   Flame, 
   ArrowUpRight, 
-  Sparkles,
   Layers,
   Code2
 } from 'lucide-react';
@@ -14,7 +13,7 @@ import { slugify } from './utils/slugify';
 import { useInstagramFeed } from './hooks/useInstagramFeed';
 import { InstagramFeed } from './components/InstagramFeed';
 
-// Brand SVGs matching ghiffa.dev portfolio
+// Brand SVGs matching ghiffa.dev
 const GithubIcon = ({ className = 'w-4 h-4' }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
@@ -33,16 +32,15 @@ const InstagramIcon = ({ className = 'w-4 h-4' }) => (
   </svg>
 );
 
-// Map link items to appropriate icons
 const getLinkIcon = (title = '', url = '') => {
   const lower = (title + ' ' + url).toLowerCase();
-  if (lower.includes('github')) return <GithubIcon className="w-4 h-4 text-[#18181B]" />;
+  if (lower.includes('github')) return <GithubIcon className="w-4 h-4 text-neutral-800" />;
   if (lower.includes('linkedin')) return <LinkedinIcon className="w-4 h-4 text-[#0A66C2]" />;
   if (lower.includes('instagram')) return <InstagramIcon className="w-4 h-4 text-[#E1306C]" />;
   if (lower.includes('skillstreak')) return <Flame className="w-4 h-4 text-[#FF5500]" />;
-  if (lower.includes('mail') || lower.includes('@')) return <Mail className="w-4 h-4 text-[#EA4335]" />;
+  if (lower.includes('mail') || lower.includes('@')) return <Mail className="w-4 h-4 text-neutral-800" />;
   if (lower.includes('portfolio') || lower.includes('website') || lower.includes('ghiffa.dev')) return <Globe className="w-4 h-4 text-[#FF5500]" />;
-  return <Layers className="w-4 h-4 text-gray-500" />;
+  return <Layers className="w-4 h-4 text-neutral-500" />;
 };
 
 const DEFAULT_INFO = {
@@ -99,8 +97,6 @@ export default function App() {
   const { data: rawProject } = useSWR('latest_project', fetchLatestProject, { fallbackData: DEFAULT_PROJECT });
   const { data: instagramPosts, error: instagramError } = useInstagramFeed();
 
-  const [aiActive, setAiActive] = useState(false);
-
   const info = rawInfo || DEFAULT_INFO;
   const links = rawLinks && rawLinks.length > 0 ? rawLinks : DEFAULT_LINKS;
   const latestProject = rawProject || DEFAULT_PROJECT;
@@ -108,271 +104,197 @@ export default function App() {
   const directoryLinks = links.filter(l => !l.featured);
 
   const fullName = info.full_name || 'Haikal Jibran Al-Ghiffarry';
-  const headline = info.headline || 'Building the bridge between bits and atoms.';
   const role = info.role || 'IoT Engineer & Fullstack Web Developer';
   const email = info.email || 'hello@ghiffa.dev';
-  const phone = info.phone_number || '+6285156958580';
 
   return (
-    <div className="min-h-screen w-full bg-[#FAFAFA] text-[#141414] font-sans antialiased selection:bg-[#FF5500] selection:text-white flex justify-center p-0 sm:p-5 md:p-8">
+    <div className="min-h-screen w-full bg-[#FAFAFA] text-[#09090B] font-sans antialiased selection:bg-[#FF5500] selection:text-white flex justify-center py-0 sm:py-8 px-0 sm:px-4">
       
-      {/* Outer Shell: Dot Grid Canvas Container with clean border on larger screens */}
-      <div className="w-full max-w-[540px] min-h-screen sm:min-h-0 bg-white sm:rounded-3xl flex flex-col relative sm:border sm:border-gray-200/80 sm:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.07)] overflow-hidden">
+      {/* Central Solid Clean Container */}
+      <main className="w-full max-w-[460px] min-h-screen sm:min-h-0 bg-white sm:rounded-3xl sm:border sm:border-neutral-200/80 sm:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] px-5 sm:px-7 py-8 flex flex-col justify-between">
         
-        {/* Architectural Dot-Grid Background Canvas matching ghiffa.dev */}
-        <div className="absolute inset-0 bg-architectural-dots pointer-events-none opacity-90 z-0" />
-
-        {/* 1. TOP STATUS BAR (Figma / Minimalist Header) */}
-        <header className="relative z-10 flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white/80 backdrop-blur-md">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="font-mono text-[11px] font-semibold tracking-wider text-gray-500 uppercase">
-              ghiffa.dev / links
-            </span>
-          </div>
-
-          {/* AI Mode Pill Toggle matching portfolio hero */}
-          <button
-            type="button"
-            onClick={() => setAiActive(!aiActive)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100/90 hover:bg-gray-200/80 border border-gray-200 text-[10px] font-mono font-semibold transition-all cursor-pointer shadow-2xs"
-            title="Toggle AI Persona Mode"
-          >
-            <Sparkles className={`w-3 h-3 ${aiActive ? 'text-[#FF5500]' : 'text-gray-400'}`} />
-            <span className={aiActive ? 'text-[#FF5500]' : 'text-gray-600'}>
-              AI Mode: {aiActive ? 'ON' : 'OFF'}
-            </span>
-          </button>
-        </header>
-
-        <div className="relative z-10 flex-1 flex flex-col pb-6">
-          
-          {/* 2. HERO FIGMA CANVAS IDENTIFIER */}
-          <section className="pt-8 pb-6 px-6 text-center relative">
+        <div>
+          {/* 1. ULTRA MINIMALIST PROFILE HEADER */}
+          <header className="flex flex-col items-center text-center pb-6">
             
-            {/* Figma Bounding Box wrapping ghiffa.dev */}
-            <div className="inline-block relative px-6 py-3.5 mb-4 select-none">
-              <div className="figma-bbox bg-white/40 backdrop-blur-2xs">
-                {/* 8 Figma resize handles */}
-                <span className="figma-handle -top-1 -left-1" />
-                <span className="figma-handle -top-1 left-1/2 -translate-x-1/2" />
-                <span className="figma-handle -top-1 -right-1" />
-                <span className="figma-handle top-1/2 -left-1 -translate-y-1/2" />
-                <span className="figma-handle top-1/2 -right-1 -translate-y-1/2" />
-                <span className="figma-handle -bottom-1 -left-1" />
-                <span className="figma-handle -bottom-1 left-1/2 -translate-x-1/2" />
-                <span className="figma-handle -bottom-1 -right-1" />
+            {/* Avatar Photo with Solid Status Beacon */}
+            <div className="relative mb-3.5">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-neutral-100 ring-1 ring-neutral-200">
+                <img
+                  src="/ghiffa.webp"
+                  alt={fullName}
+                  className="w-full h-full object-cover object-top"
+                />
               </div>
-
-              {/* Multiplayer Cursor Badge pinned to bounding box */}
-              <div className="absolute -top-3.5 -right-2 sm:-right-3 flex items-center gap-1 bg-[#FF5500] text-white font-mono text-[9px] font-bold px-2 py-0.5 rounded-[3px] shadow-sm z-30 pointer-events-none">
-                <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 16 16">
-                  <path d="M1 1L6.5 14.5L8.8 8.8L14.5 6.5L1 1Z" />
-                </svg>
-                <span>{aiActive ? 'Claude 3.7 (AI)' : 'Ghiffa (Lead)'}</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#141414] font-sans m-0 leading-tight">
-                ghiffa.dev
-              </h1>
+              <span 
+                className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white" 
+                title="Available for projects" 
+              />
             </div>
 
-            {/* Subtitle / Bio details */}
-            <h2 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight mb-1.5">
+            {/* Name & Domain */}
+            <h1 className="text-xl sm:text-[22px] font-bold tracking-tight text-neutral-900 m-0">
               {fullName}
-            </h2>
+            </h1>
             
-            <p className="font-mono text-xs text-[#FF5500] font-semibold mb-2">
-              {aiActive ? '// Autonomous Full-Stack AI Engineer Persona' : headline}
-            </p>
-            
-            <p className="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">
-              {role} • Kuningan, West Java, ID
+            <p className="font-mono text-[11px] text-neutral-500 tracking-wide mt-1">
+              ghiffa.dev • Kuningan, ID
             </p>
 
-            {/* Quick Contact & Social Floating Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+            <p className="text-[13px] text-neutral-600 max-w-[320px] leading-relaxed mt-2.5 font-normal">
+              {role} — building the bridge between bits and atoms.
+            </p>
+
+            {/* Minimal Monochrome Social Icon Row */}
+            <div className="flex items-center gap-1.5 mt-4">
               <a
                 href={`mailto:${email}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/90 text-xs font-medium text-gray-700 hover:text-black hover:border-gray-400 shadow-2xs hover:shadow-xs transition-all"
+                aria-label="Email"
+                className="p-2 rounded-xl text-neutral-500 hover:text-neutral-950 hover:bg-neutral-100 transition-colors"
               >
-                <Mail className="w-3.5 h-3.5 text-[#EA4335]" />
-                <span>Email</span>
+                <Mail className="w-4 h-4" />
               </a>
               <a
                 href="https://github.com/ghiffa08"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/90 text-xs font-medium text-gray-700 hover:text-black hover:border-gray-400 shadow-2xs hover:shadow-xs transition-all"
+                aria-label="GitHub"
+                className="p-2 rounded-xl text-neutral-500 hover:text-neutral-950 hover:bg-neutral-100 transition-colors"
               >
-                <GithubIcon className="w-3.5 h-3.5" />
-                <span>GitHub</span>
+                <GithubIcon className="w-4 h-4" />
               </a>
               <a
                 href="https://www.linkedin.com/in/haikal-jibran-al-ghiffarry"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/90 text-xs font-medium text-gray-700 hover:text-black hover:border-gray-400 shadow-2xs hover:shadow-xs transition-all"
+                aria-label="LinkedIn"
+                className="p-2 rounded-xl text-neutral-500 hover:text-neutral-950 hover:bg-neutral-100 transition-colors"
               >
-                <LinkedinIcon className="w-3.5 h-3.5 text-[#0A66C2]" />
-                <span>LinkedIn</span>
+                <LinkedinIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://instagram.com/haikaljibraan"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="p-2 rounded-xl text-neutral-500 hover:text-neutral-950 hover:bg-neutral-100 transition-colors"
+              >
+                <InstagramIcon className="w-4 h-4" />
               </a>
             </div>
-          </section>
+          </header>
 
-          {/* 3. FEATURED PLATFORM: SKILLSTREAK.ID (Signature Flame Orange Banner) */}
-          <section className="px-5 sm:px-6 py-2">
-            <div className="font-mono text-[10px] text-gray-400 mb-2 px-1 uppercase tracking-widest font-semibold">
-              // Flagship Platform
-            </div>
+          {/* 2. SOLID CARDS & DIRECTORY */}
+          <div className="flex flex-col gap-2.5 pt-2">
+            
+            {/* Flagship Platform: skillstreak.id (Solid High-Contrast Obsidian Card) */}
             <a
               href="https://skillstreak.id"
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative block p-5 rounded-2xl bg-[#111111] text-white border border-neutral-800 shadow-md hover:shadow-xl hover:border-[#FF5500]/50 transition-all duration-300 overflow-hidden no-underline"
+              className="group block p-4 rounded-2xl bg-[#09090B] text-white border border-neutral-850 hover:border-neutral-700 transition-all duration-200 no-underline"
             >
-              {/* Orange glowing aura */}
-              <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-[#FF5500]/20 blur-2xl group-hover:bg-[#FF5500]/35 transition-all pointer-events-none" />
-
-              <div className="flex items-start justify-between gap-4 mb-2.5 relative z-10">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#FF5500] flex items-center justify-center shadow-xs">
-                    <Flame className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-orange-400 font-bold block">
-                      Gamified Coding Platform
-                    </span>
-                    <h2 className="text-lg font-bold tracking-tight text-white m-0">
-                      skillstreak.id
-                    </h2>
-                  </div>
-                </div>
-                <div className="w-7 h-7 rounded-full bg-white/10 group-hover:bg-[#FF5500] text-white flex items-center justify-center transition-colors">
-                  <ArrowUpRight className="w-4 h-4 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </div>
-              </div>
-
-              <p className="text-xs text-neutral-300 leading-relaxed mb-4 relative z-10 font-normal">
-                The fastest path from zero to deployable engineer, built like a game and engineered for the real world.
-              </p>
-
-              <div className="flex items-center justify-between relative z-10">
+              <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#FF5500] animate-ping shrink-0" />
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-orange-300 font-semibold">
-                    Live Platform
+                  <div className="w-6 h-6 rounded-lg bg-[#FF5500] flex items-center justify-center shrink-0">
+                    <Flame className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <span className="text-sm font-bold text-white tracking-tight">skillstreak.id</span>
+                  <span className="font-mono text-[9px] uppercase tracking-wider bg-neutral-800 text-orange-400 font-semibold px-2 py-0.5 rounded-full">
+                    Featured
                   </span>
                 </div>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-[#FF5500] hover:bg-[#E64D00] px-3 py-1 rounded-full shadow-xs transition-colors">
-                  Explore ↗
-                </span>
+                <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-white transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </div>
+              <p className="text-[12px] text-neutral-400 leading-relaxed m-0 font-normal">
+                Gamified coding platform with interactive streaks & real-time XP evaluations.
+              </p>
             </a>
-          </section>
 
-          {/* 4. LATEST SELECTED WORK CARD */}
-          {latestProject && (
-            <section className="px-5 sm:px-6 py-2">
-              <div className="font-mono text-[10px] text-gray-400 mb-2 px-1 uppercase tracking-widest font-semibold">
-                // Latest Selected Work
-              </div>
+            {/* Latest Selected Work: Solid Clean Card */}
+            {latestProject && (
               <a 
                 href={`https://ghiffa.dev/project/${slugify(latestProject.title)}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="group block p-4 bg-white rounded-2xl border border-gray-150 hover:border-gray-300 shadow-xs hover:shadow-md transition-all duration-300 select-none no-underline"
+                className="group flex items-center justify-between p-3.5 rounded-2xl bg-white border border-neutral-200 hover:border-neutral-950 transition-all duration-200 no-underline"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-800 shrink-0 group-hover:bg-[#FF5500]/10 group-hover:text-[#FF5500] transition-colors">
-                      <Code2 className="w-5 h-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="font-mono text-[9px] uppercase tracking-widest text-[#FF5500] font-semibold block truncate">
-                        {latestProject.category || 'FEATURED WORK'}
-                      </span>
-                      <h3 className="text-sm font-bold text-gray-950 group-hover:text-[#FF5500] transition-colors truncate m-0">
-                        {latestProject.title}
-                      </h3>
-                    </div>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-800 shrink-0 group-hover:bg-[#FF5500] group-hover:text-white transition-colors">
+                    <Code2 className="w-4 h-4" />
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-black transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                  <div className="min-w-0">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-[#FF5500] font-semibold block truncate">
+                      {latestProject.category || 'SELECTED WORK'}
+                    </span>
+                    <h3 className="text-sm font-semibold text-neutral-900 group-hover:text-black truncate m-0">
+                      {latestProject.title}
+                    </h3>
+                  </div>
                 </div>
+                <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-black transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
               </a>
-            </section>
-          )}
+            )}
 
-          {/* 5. DIRECTORY LINKS (Custom Bio Links) */}
-          {directoryLinks.length > 0 && (
-            <section className="px-5 sm:px-6 py-2">
-              <div className="font-mono text-[10px] text-gray-400 mb-2.5 px-1 uppercase tracking-widest font-semibold">
-                // Directory & Socials
-              </div>
-              
-              <div className="flex flex-col gap-2.5">
-                {directoryLinks.map((link) => (
-                  <a 
-                    key={link.id}
-                    href={link.url}
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-150 hover:border-gray-300 shadow-xs hover:shadow-md transition-all duration-300 no-underline"
-                  >
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-gray-50 text-gray-700 group-hover:bg-orange-50 group-hover:text-[#FF5500] flex items-center justify-center shrink-0 transition-colors">
-                        {getLinkIcon(link.title, link.url)}
-                      </div>
-                      <div className="min-w-0">
-                        <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#FF5500] transition-colors truncate m-0">
-                          {link.title}
-                        </h3>
-                        {link.subtitle && (
-                          <p className="font-mono text-[10px] text-gray-500 truncate m-0">
-                            {link.subtitle}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-black transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
-                  </a>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* 6. INSTAGRAM FEED SECTION */}
-          <InstagramFeed posts={instagramPosts} error={instagramError} />
-
-          {/* 7. CLEAN FOOTER */}
-          <footer className="mt-auto pt-6 px-6 border-t border-gray-150/80 flex flex-col items-center justify-center text-center">
-            <div className="font-mono text-[11px] text-gray-400 mb-2">
-              © {new Date().getFullYear()} {fullName}
-            </div>
-            <div className="flex items-center gap-3 font-mono text-[10px] font-semibold text-gray-600">
+            {/* Direct Links (Solid Clean Rows) */}
+            {directoryLinks.map((link) => (
               <a 
-                href={`mailto:${email}`} 
-                className="hover:text-[#FF5500] transition-colors no-underline"
+                key={link.id}
+                href={link.url}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group flex items-center justify-between p-3.5 rounded-2xl bg-white border border-neutral-200 hover:border-neutral-950 hover:bg-neutral-50/40 transition-all duration-200 no-underline"
               >
-                {email}
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-neutral-700 group-hover:bg-neutral-900 group-hover:text-white shrink-0 transition-colors">
+                    {getLinkIcon(link.title, link.url)}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-neutral-900 group-hover:text-black truncate m-0">
+                      {link.title}
+                    </h3>
+                    {link.subtitle && (
+                      <p className="font-mono text-[10px] text-neutral-500 truncate m-0">
+                        {link.subtitle}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-black transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
               </a>
-              {phone && (
-                <>
-                  <span>•</span>
-                  <a 
-                    href={`tel:${phone}`} 
-                    className="hover:text-[#FF5500] transition-colors no-underline"
-                  >
-                    {phone}
-                  </a>
-                </>
-              )}
-            </div>
-          </footer>
+            ))}
 
+            {/* Instagram Feed (if loaded) */}
+            <InstagramFeed posts={instagramPosts} error={instagramError} />
+
+          </div>
         </div>
 
-      </div>
+        {/* 3. ULTRA MINIMALIST FOOTER */}
+        <footer className="pt-8 mt-6 border-t border-neutral-100 text-center">
+          <p className="font-mono text-[11px] text-neutral-400 m-0">
+            © {new Date().getFullYear()} {fullName}
+          </p>
+          <div className="flex items-center justify-center gap-3 font-mono text-[10px] text-neutral-500 mt-1.5">
+            <a 
+              href={`mailto:${email}`} 
+              className="hover:text-neutral-950 transition-colors no-underline"
+            >
+              {email}
+            </a>
+            <span>•</span>
+            <a 
+              href="https://ghiffa.dev" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-neutral-950 transition-colors no-underline"
+            >
+              ghiffa.dev
+            </a>
+          </div>
+        </footer>
+
+      </main>
     </div>
   );
 }
